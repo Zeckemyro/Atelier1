@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier 1</title>
+</head>
+
+<body>
+    <h2>Ventes</h2>
+    <div id="graphContainer"></div>
+    <script defer>
+        const svgns = "http://www.w3.org/2000/svg";
+        let mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+        let ventes = [6500, 5550, 4200, 4525, 2500, 1500, 500, 1000, 1750, 2300, 3700, 3500];
+
+        let viewPortMaxUnitX = 1000;
+        let viewPortMaxUnitY = 1000;
+        let viewport = null;
+        init_UI();
+        function init_UI() {
+            insertViewPort("graphContainer");
+            graph();
+        }
+        function insertViewPort(containerId) {
+            viewport = document.createElementNS(svgns, "svg");
+            viewport.setAttribute("id", "viewport");
+            viewport.setAttribute("viewBox", "0 0 " + viewPortMaxUnitX + " " + viewPortMaxUnitY);
+            document.getElementById(containerId).appendChild(viewport);
+        }
+        function graph() {
+            let threshold = 7000;
+            for (let i = 0; i <= 70; i++) {
+                if (i % 10 == 0) {
+                    viewport.appendChild(text(0, (6 * (i + 2)) + 3, "$ " + threshold, 0, "1", "black"));
+                    viewport.appendChild(line(50, 6 * (i + 2), 600, 6 * (i + 2), "black", 1.5));
+                    threshold -= 1000;
+                } else {
+                    viewport.appendChild(line(50, 6 * (i + 2), 600, 6 * (i + 2)));
+                }
+            }
+            let position = 75;
+            for (let i = 0; i < mois.length; i++) {
+                viewport.appendChild(text(position, 450, mois[i], 45, "1", "black"));
+                let colour = "red";
+                if (ventes[i] >= 4500) {
+                    colour = "green";
+                }
+                else if (ventes[i] <= 4200 && ventes[i] > 2500) {
+                    colour = "yellow";
+                } else if (ventes[i] <= 2500 && ventes[i] > 1000) {
+                    colour = "orange";
+                }
+                viewport.appendChild(rect(position-7, 432 - (ventes[i] / 100 * 6), 20, (ventes[i] / 100 * 6), colour));
+                //viewport.appendChild(line(position + 5, 432, position + 5, 432 - (ventes[i] / 100 * 6), colour, 20));
+                viewport.appendChild(text(position - 11, 430 - (ventes[i] / 100 * 6), "$" + ventes[i], 0, "0.7", "black", "bold"));
+                position += 45;
+            }
+        }
+        function line(x1, y1, x2, y2, stroke = "black", strokeWidth = 1) {
+            let line = document.createElementNS(svgns, "line");
+            line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+            line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+            line.setAttribute("stroke", stroke);
+            line.setAttribute("stroke-width", strokeWidth);
+            return line;
+        }
+        function text(x, y, content, angle = 0, size = "1", fill = "black", weight = "normal") {
+            let text = document.createElementNS(svgns, "text");
+            text.setAttribute("x", x); text.setAttribute("y", y);
+            text.setAttribute("transform", `rotate(${angle},${x},${y})`);
+            text.setAttribute("font-size", size + "em");
+            text.setAttribute("font-weight", weight);
+            text.setAttribute("fill", fill);
+            text.innerHTML = content;
+            return text;
+        }
+        function rect(x, y, width, height, fill = "white", stroke = "black", strokeWidth = 1) {
+            let rect = document.createElementNS(svgns, "rect");
+            rect.setAttribute("x", x); rect.setAttribute("y", y);
+            rect.setAttribute("width", width); rect.setAttribute("height", height);
+            rect.setAttribute("fill", fill); rect.setAttribute("stroke", stroke);
+            rect.setAttribute("stroke-width", strokeWidth);
+            return rect;
+        }
+
+    </script>
+</body>
+
+</html>
